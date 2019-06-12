@@ -4,10 +4,16 @@ echo -n 'Name:     '; read name
 echo -n 'RAM (MB): '; read ram
 echo -n 'CPUs:     '; read cpu
 echo
-echo -n 'ISO:   '; read iso
 echo -n 'VG/LV: '; read lv
 echo
 echo -n 'VNC port: '; read vnc
+echo
+echo 'ISO:   '
+images=($(ls -1 /var/tmp/iso/))
+for k in ${!images[@]}; do echo "${k}: ${images[${k}]}"; done
+read image
+if [ ${image} -ge ${#images[@]} ]; then echo 'Index out of range'; exit; fi
+iso="/var/tmp/iso/${images[${image}]}"
 cat <<- EOF
 
 	==============================
