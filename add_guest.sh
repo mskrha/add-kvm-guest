@@ -38,6 +38,11 @@ if [ $(echo ${name} | wc -c) -gt 65 ]; then
 	echo 'Guest name must have maximum 64 chars'
 	exit
 fi
+virsh domid ${name} >/dev/null 2>/dev/null
+if [ ${?} -eq 0 ]; then
+	echo "Guest with name ${name} alredy exists"
+	exit
+fi
 
 echo -n 'RAM (MB): '; read ram
 if [ $(echo "${ram}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
