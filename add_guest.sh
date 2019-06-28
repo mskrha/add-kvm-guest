@@ -120,7 +120,7 @@ EOF
 
 echo -n 'Deploy? [Y/n]'; read -n 1 -s q
 echo
-if [ ${q} == 'n' ]; then exit; fi
+if [ ${q:-Y} == 'n' ]; then exit; fi
 echo
 
 lvcreate -L ${STORAGE_SIZE} -n ${lv} ${vg} || exit
