@@ -2,6 +2,7 @@
 
 ISO_BASE='/var/tmp/iso/'
 IMAGES=($(ls -1 ${ISO_BASE}))
+CPU_TOTAL=4
 
 echo 'KVM guest installer, version 0.1'
 
@@ -60,8 +61,8 @@ if [ $(echo "${cpu}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
 	echo 'Invalid input (must contain only numbers)'
 	exit
 fi
-if [ ${cpu} -lt 1 -o ${cpu} -gt 4 ]; then
-	echo 'CPUs must be in range 1 to 4'
+if [ ${cpu} -lt 1 -o ${cpu} -gt ${CPU_TOTAL} ]; then
+	echo "CPUs must be in range 1 to ${CPU_TOTAL}"
 	exit
 fi
 
