@@ -91,7 +91,7 @@ if [ -L ${dev} ]; then
 fi
 
 echo
-echo 'Storage size (GB): (default 2 GB)'
+echo -n 'Storage size (GB) (default 2 GB): '
 read size
 if [ "${size}" == '' ]; then size=2; fi
 if [ $(echo "${size}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
