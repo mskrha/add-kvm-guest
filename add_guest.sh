@@ -54,7 +54,8 @@ if [ ${ram} -lt 64 -o ${ram} -gt 4096 ]; then
 	exit
 fi
 
-echo -n 'CPUs:     '; read cpu
+echo -n 'CPUs (default 1): '; read cpu
+if [ "${cpu}" == '' ]; then cpu=1; fi
 if [ $(echo "${cpu}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
 	echo 'Invalid input (must contain only numbers)'
 	exit
