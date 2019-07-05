@@ -103,18 +103,15 @@ if [ ${size} -lt 2 -o ${size} -gt 512 ]; then
 	exit
 fi
 
-echo -n 'VNC port: '; read vnc
-if [ "x${vnc}" == 'x' ]; then
-	echo 'VPN port must not be empty'
-	exit
-fi
-if [ $(echo "${vnc}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
-	echo 'Invalid input (must contain only numbers)'
-	exit
-fi
-if [ ${vnc} -lt 5900 -o ${vnc} -gt 5999 ]; then
-	echo 'VNC port must be in range 5900 to 5999'
-	exit
+ports=$(grep vnc /etc/libvirt/qemu/*.xml 2>/dev/null)
+if [ ${?} -ne 0 ]; then
+	vnc=5900
+else
+	used=$(echo "${ports}" | sed 's/.*port=.\([0-9]\+\).*/\1/' | sort -n)
+	for vnc in {5900..5999}; do
+		echo "${used}" | grep ^${vnc}$ >/dev/null 2>/dev/null
+		if [ ${?} -eq 1 ]; then break; fi
+	done
 fi
 
 cat <<- EOF
