@@ -2,7 +2,6 @@
 
 ISO_BASE='/var/tmp/iso/'
 IMAGES=($(ls -1 ${ISO_BASE}))
-STORAGE_SIZE='2g'
 
 echo 'KVM guest installer, version 0.1'
 
@@ -89,6 +88,19 @@ if [ -L ${dev} ]; then
 	exit
 fi
 
+echo
+echo 'Storage size (GB): (default 2 GB)'
+read size
+if [ "${size}" == '' ]; then size=2; fi
+if [ $(echo "${size}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
+	echo 'Invalid input (must contain only numbers)'
+	exit
+fi
+if [ ${size} -lt 2 -o ${size} -gt 512 ]; then
+	echo 'Storage size must be in range 2 GB to 512 GB'
+	exit
+fi
+
 echo -n 'VNC port: '; read vnc
 if [ "x${vnc}" == 'x' ]; then
 	echo 'VPN port must not be empty'
@@ -112,6 +124,7 @@ cat <<- EOF
 
 	ISO:      ${iso}
 	Disk:     ${dev}
+	Size:     ${size} GB
 
 	VNC port: ${vnc}
 	==============================
@@ -123,7 +136,7 @@ echo
 if [ ${q:-Y} == 'n' ]; then exit; fi
 echo
 
-lvcreate -L ${STORAGE_SIZE} -n ${lv} ${vg} || exit
+lvcreate -L "${size}g" -n ${lv} ${vg} || exit
 
 virt-install \
 	--virt-type=kvm \
