@@ -120,13 +120,13 @@ fi
 cat <<- EOF
 
 	==============================
-	Name:     ${name}
-	RAM:      ${ram} MB
-	CPUs:     ${cpu}
+	Name: ${name}
 
-	ISO:      ${iso}
-	Disk:     ${dev}
-	Size:     ${size} GB
+	Memory:    ${ram} MB
+	CPU cores: ${cpu}
+	Storage:   ${dev} (${size} GB)
+
+	Installation ISO: ${IMAGES[${img}]}
 
 	VNC port: ${vnc}
 	==============================
