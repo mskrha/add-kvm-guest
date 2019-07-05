@@ -43,7 +43,8 @@ if [ ${?} -eq 0 ]; then
 	exit
 fi
 
-echo -n 'RAM (MB): '; read ram
+echo -n 'RAM (MB): (default 512 MB)'; read ram
+if [ "${ram}" == '' ]; then ram=512; fi
 if [ $(echo "${ram}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
 	echo 'Invalid input (must contain only numbers)'
 	exit
