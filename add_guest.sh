@@ -1,6 +1,6 @@
 #! /bin/bash
 
-ISO_BASE='/var/tmp/iso/'
+ISO_BASE='/srv/iso/'
 IMAGES=($(ls -1 ${ISO_BASE}))
 CPU_TOTAL=4
 
