@@ -147,6 +147,6 @@ virt-install \
 	--cdrom "${iso}" \
 	--disk path=${dev},device=disk,bus=virtio \
 	--network bridge=lan,model=virtio \
-	--graphics vnc,listen=0.0.0.0,port=${vnc} \
+	--graphics vnc,listen=10.10.10.200,port=${vnc} \
 	--noautoconsole \
 	--noreboot
