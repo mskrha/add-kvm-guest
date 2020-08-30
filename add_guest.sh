@@ -99,8 +99,8 @@ if [ $(echo "${size}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
 	echo 'Invalid input (must contain only numbers)'
 	exit
 fi
-if [ ${size} -lt 2 -o ${size} -gt 512 ]; then
-	echo 'Storage size must be in range 2 GB to 512 GB'
+if [ ${size} -lt 1 -o ${size} -gt 512 ]; then
+	echo 'Storage size must be in range 1 GB to 512 GB'
 	exit
 fi
 
