@@ -31,8 +31,8 @@ case ${inst} in
 	echo 'Available Debian versions:'
 	versions=(${!DEBIAN_DISTS[@]})
 	for d in ${!DEBIAN_NAMES[@]}; do
-		if [ ${d} -lt 10 ]
-			then dd=" ${d}"
+		if [ ${d} -lt 10 ]; then
+			dd=" ${d}"
 		else
 			dd=${d}
 		fi
