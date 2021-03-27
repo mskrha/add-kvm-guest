@@ -35,3 +35,7 @@ DEBIAN_PRESEED_FILES=(
 VG_NAMES=(
 	'vg0'
 )
+
+BRIDGES=(
+	'br0'
+)

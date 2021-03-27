@@ -194,6 +194,42 @@ if [ ${size} -lt 1 -o ${size} -gt 512 ]; then
 fi
 
 #
+#	Select bridge to use as primary network
+#
+case ${#BRIDGES[@]} in
+0)
+	echo 'No bridges defined!'
+	exit
+	;;
+1)
+	br=${BRIDGES[0]}
+	;;
+*)
+	echo
+	echo 'Select network bridge to use:'
+	for n in ${!BRIDGES[@]}; do
+		if [ ${n} -eq 0 ]; then
+			mm=' (default)'
+		else
+			mm=''
+		fi
+		echo -e "\t${n}: ${BRIDGES[${n}]}${mm}"
+	done
+	read net
+	if [ "${net}" == '' ]; then net=0; fi
+	if [ $(echo "${net}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
+		echo 'Invalid input (must contain only numbers)'
+		exit
+	fi
+	if [ ${net} -lt 0 -o ${net} -ge ${#BRIDGES[@]} ]; then
+		echo 'Index out of range'
+		exit
+	fi
+	br=${BRIDGES[${net}]}
+	;;
+esac
+
+#
 #	Find lowest available port for VNC console
 #
 ports=$(grep vnc /etc/libvirt/qemu/*.xml 2>/dev/null)
@@ -218,6 +254,8 @@ cat <<- EOF
 	Memory:    ${ram} MB
 	CPU cores: ${cpu}
 	Storage:   ${dev} (${size} GB)
+
+	Network bridge: ${br}
 
 	Installation type: ${msg1}
 	${msg2}
@@ -266,7 +304,7 @@ virt-install \
 	--vcpus ${cpu} \
 	--cpu host-model-only \
 	--disk path=${dev},device=disk,bus=virtio \
-	--network bridge=lan,model=virtio \
+	--network bridge=${br},model=virtio \
 	--graphics vnc,listen=${VNC_LISTEN},port=${vnc} \
 	--noautoconsole \
 	--noreboot \
