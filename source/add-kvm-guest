@@ -86,7 +86,7 @@ esac
 #	Guest name
 #
 echo
-echo -n 'Name:     '; read name
+echo -n 'Name: '; read name
 if [ "x${name}" == 'x' ]; then
 	echo 'Guest name must not be empty'
 	exit
