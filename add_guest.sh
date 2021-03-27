@@ -3,26 +3,82 @@
 ISO_BASE='/srv/iso/'
 IMAGES=($(ls -1 ${ISO_BASE}))
 CPU_TOTAL=4
+DOMAIN='testing.local'
 
-echo 'KVM guest installer, version 0.1'
+DEBIAN_PRESEED_PATH='http://10.10.2.80/preseed'
+DEBIAN_DISTS=(
+	[8]='jessie'
+	[9]='stretch'
+	[10]='buster'
+)
+DEBIAN_NAMES=(
+	[8]='Jessie'
+	[9]='Stretch'
+	[10]='Buster'
+)
+DEBIAN_VERSIONS=(${!DEBIAN_DISTS[@]})
+
+echo 'KVM guest installer, version 0.2'
 
 echo
-echo 'Available installation ISOs:'
-for k in ${!IMAGES[@]}; do echo "${k}: ${IMAGES[${k}]}"; done
-echo -n 'Select install ISO: '; read img
-if [ "x${img}" == 'x' ]; then
-	echo 'No installation ISO chosen'
+
+echo 'Select type of installation:'
+echo -e '\t0: Debian with preseed (default)'
+echo -e '\t1: Custom ISO'
+read inst
+if [ "${inst}" == '' ]; then inst=0; fi
+case ${inst} in
+0)
+	echo 'Available Debian versions:'
+	for d in ${!DEBIAN_NAMES[@]}; do
+		if [ ${d} -lt 10 ]
+			then dd=" ${d}"
+		else
+			dd=${d}
+		fi
+		if [ ${d} -eq ${DEBIAN_VERSIONS[-1]} ]; then
+			mm=' (default)'
+		fi
+		echo -e "\t${dd}: ${DEBIAN_NAMES[${d}]}${mm}"
+	done
+	read deb
+	if [ "${deb}" == '' ]; then deb=${DEBIAN_VERSIONS[-1]}; fi
+	if [ $(echo "${deb}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
+		echo 'Invalid input (must contain only numbers)'
+		exit
+	fi
+	if [ ${deb} -lt ${DEBIAN_VERSIONS[0]} -o ${deb} -gt ${DEBIAN_VERSIONS[-1]} ]; then
+		echo 'Wrong Debian version!'
+		exit
+	fi
+	msg1='Debian with preseed'
+	msg2="Debian version:    ${DEBIAN_NAMES[${deb}]} (${deb})"
+	;;
+1)
+	echo 'Available installation ISOs:'
+	for k in ${!IMAGES[@]}; do echo "${k}: ${IMAGES[${k}]}"; done
+	echo -n 'Select install ISO: '; read img
+	if [ "x${img}" == 'x' ]; then
+		echo 'No installation ISO chosen'
+		exit
+	fi
+	if [ $(echo "${img}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
+		echo 'Invalid input (must contain only numbers)'
+		exit
+	fi
+	if [ ${img} -lt 0 -o ${img} -ge ${#IMAGES[@]} ]; then
+		echo 'Index out of range'
+		exit
+	fi
+	iso="${ISO_BASE}${IMAGES[${img}]}"
+	msg1='Custom ISO'
+	msg2="Installation ISO:  ${IMAGES[${img}]}"
+	;;
+*)
+	echo 'Wrong installation type!'
 	exit
-fi
-if [ $(echo "${img}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
-	echo 'Invalid input (must contain only numbers)'
-	exit
-fi
-if [ ${img} -lt 0 -o ${img} -ge ${#IMAGES[@]} ]; then
-	echo 'Index out of range'
-	exit
-fi
-iso="${ISO_BASE}${IMAGES[${img}]}"
+	;;
+esac
 
 echo
 echo -n 'Name:     '; read name
@@ -124,7 +180,8 @@ cat <<- EOF
 	CPU cores: ${cpu}
 	Storage:   ${dev} (${size} GB)
 
-	Installation ISO: ${IMAGES[${img}]}
+	Installation type: ${msg1}
+	${msg2}
 
 	VNC port: ${vnc}
 	==============================
@@ -138,15 +195,28 @@ echo
 
 lvcreate -L "${size}g" -n ${lv} ${vg} || exit
 
+case ${inst} in
+0)
+	args="--location http://ftp.cz.debian.org/debian/dists/${DEBIAN_DISTS[${deb}]}/main/installer-amd64/ --extra-args auto=true --extra-args url=${DEBIAN_PRESEED_PATH}/${DEBIAN_DISTS[${deb}]}-kvm --extra-args hostname=${name} --extra-args domain=${DOMAIN}"
+	;;
+1)
+	args="--cdrom ${iso}"
+	;;
+*)
+	echo 'BUG BUG BUG'
+	exit 1
+	;;
+esac
+
 virt-install \
 	--virt-type=kvm \
 	--name ${name} \
 	--memory ${ram} \
 	--vcpus ${cpu} \
 	--cpu host-model-only \
-	--cdrom "${iso}" \
 	--disk path=${dev},device=disk,bus=virtio \
 	--network bridge=lan,model=virtio \
 	--graphics vnc,listen=10.10.10.200,port=${vnc} \
 	--noautoconsole \
-	--noreboot
+	--noreboot \
+	${args}
