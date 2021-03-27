@@ -1,0 +1,4 @@
+#! /bin/bash
+
+chown root:root /usr/sbin/add-kvm-guest
+chmod 755 /usr/sbin/add-kvm-guest

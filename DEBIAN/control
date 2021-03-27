@@ -1,0 +1,8 @@
+Package: add-kvm-guest
+Version: INSTALL_VERSION
+Section: custom
+Priority: optional
+Architecture: all
+Installed-Size: INSTALL_SIZE
+Maintainer: Michal Skrha <michal@skrha.cz>
+Description: Simple script used to deploy new KVM guest.
