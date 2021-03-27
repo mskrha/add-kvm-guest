@@ -3,8 +3,6 @@
 CONFIG='/etc/default/add-kvm-guest'
 source ${CONFIG} || (echo "Configuration file ${CONFIG} not readable!" && exit 1)
 
-IMAGES=($(ls -1 ${ISO_BASE}))
-
 DEBIAN_VERSIONS=(${!DEBIAN_DISTS[@]})
 
 echo 'KVM guest installer, version BUILD_VERSION'
@@ -45,7 +43,8 @@ case ${inst} in
 	;;
 1)
 	echo 'Available installation ISOs:'
-	for k in ${!IMAGES[@]}; do echo "${k}: ${IMAGES[${k}]}"; done
+	images=($(ls -1 ${ISO_BASE}))
+	for k in ${!images[@]}; do echo "${k}: ${images[${k}]}"; done
 	echo -n 'Select install ISO: '; read img
 	if [ "x${img}" == 'x' ]; then
 		echo 'No installation ISO chosen'
@@ -55,13 +54,13 @@ case ${inst} in
 		echo 'Invalid input (must contain only numbers)'
 		exit
 	fi
-	if [ ${img} -lt 0 -o ${img} -ge ${#IMAGES[@]} ]; then
+	if [ ${img} -lt 0 -o ${img} -ge ${#images[@]} ]; then
 		echo 'Index out of range'
 		exit
 	fi
-	iso="${ISO_BASE}${IMAGES[${img}]}"
+	iso="${ISO_BASE}${images[${img}]}"
 	msg1='Custom ISO'
-	msg2="Installation ISO:  ${IMAGES[${img}]}"
+	msg2="Installation ISO:  ${iso}"
 	;;
 *)
 	echo 'Wrong installation type!'
