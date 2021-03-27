@@ -1,25 +1,13 @@
 #! /bin/bash
 
-ISO_BASE='/srv/iso/'
-IMAGES=($(ls -1 ${ISO_BASE}))
-CPU_TOTAL=4
-DOMAIN='testing.local'
-VNC_LISTEN='10.10.10.200'
+CONFIG='/etc/default/add-kvm-guest'
+source ${CONFIG} || (echo "Configuration file ${CONFIG} not readable!" && exit 1)
 
-DEBIAN_PRESEED_PATH='http://10.10.2.80/preseed'
-DEBIAN_DISTS=(
-	[8]='jessie'
-	[9]='stretch'
-	[10]='buster'
-)
-DEBIAN_NAMES=(
-	[8]='Jessie'
-	[9]='Stretch'
-	[10]='Buster'
-)
+IMAGES=($(ls -1 ${ISO_BASE}))
+
 DEBIAN_VERSIONS=(${!DEBIAN_DISTS[@]})
 
-echo 'KVM guest installer, version 0.2'
+echo 'KVM guest installer, version 0.3'
 
 echo
 

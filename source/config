@@ -1,0 +1,28 @@
+# add-kvm-guest configuration
+
+# Directory with ISO files used for custom ISO installation
+ISO_BASE='/srv/iso/'
+
+# Virtual CPUs limit for guest
+CPU_TOTAL=4
+
+# Domain name for guest
+DOMAIN='testing.local'
+
+# IP address where to listen for VNC console
+VNC_LISTEN='10.10.10.200'
+
+# Path with Debian preseed files
+DEBIAN_PRESEED_PATH='http://10.10.2.80/preseed'
+
+# Supported Debian versions (with code and suite names)
+DEBIAN_DISTS=(
+	[8]='jessie'
+	[9]='stretch'
+	[10]='buster'
+)
+DEBIAN_NAMES=(
+	[8]='Jessie'
+	[9]='Stretch'
+	[10]='Buster'
+)
