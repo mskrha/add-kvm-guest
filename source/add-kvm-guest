@@ -4,7 +4,7 @@
 #	Read configuration file
 #
 CONFIG='/etc/default/add-kvm-guest'
-source ${CONFIG} || (echo "Configuration file ${CONFIG} not readable!" && exit 1)
+[ ! -r ${CONFIG} ] && echo "Configuration file ${CONFIG} not readable!" && exit 1 || source ${CONFIG}
 
 echo 'KVM guest installer, version BUILD_VERSION'
 
