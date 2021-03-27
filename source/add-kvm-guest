@@ -7,7 +7,7 @@ IMAGES=($(ls -1 ${ISO_BASE}))
 
 DEBIAN_VERSIONS=(${!DEBIAN_DISTS[@]})
 
-echo 'KVM guest installer, version 0.3'
+echo 'KVM guest installer, version BUILD_VERSION'
 
 echo
 
