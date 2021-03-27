@@ -6,8 +6,6 @@
 CONFIG='/etc/default/add-kvm-guest'
 source ${CONFIG} || (echo "Configuration file ${CONFIG} not readable!" && exit 1)
 
-DEBIAN_VERSIONS=(${!DEBIAN_DISTS[@]})
-
 echo 'KVM guest installer, version BUILD_VERSION'
 
 echo
@@ -23,24 +21,25 @@ if [ "${inst}" == '' ]; then inst=0; fi
 case ${inst} in
 0)	# Debian with preseed
 	echo 'Available Debian versions:'
+	versions=(${!DEBIAN_DISTS[@]})
 	for d in ${!DEBIAN_NAMES[@]}; do
 		if [ ${d} -lt 10 ]
 			then dd=" ${d}"
 		else
 			dd=${d}
 		fi
-		if [ ${d} -eq ${DEBIAN_VERSIONS[-1]} ]; then
+		if [ ${d} -eq ${versions[-1]} ]; then
 			mm=' (default)'
 		fi
 		echo -e "\t${dd}: ${DEBIAN_NAMES[${d}]}${mm}"
 	done
 	read deb
-	if [ "${deb}" == '' ]; then deb=${DEBIAN_VERSIONS[-1]}; fi
+	if [ "${deb}" == '' ]; then deb=${versions[-1]}; fi
 	if [ $(echo "${deb}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
 		echo 'Invalid input (must contain only numbers)'
 		exit
 	fi
-	if [ ${deb} -lt ${DEBIAN_VERSIONS[0]} -o ${deb} -gt ${DEBIAN_VERSIONS[-1]} ]; then
+	if [ ${deb} -lt ${versions[0]} -o ${deb} -gt ${versions[-1]} ]; then
 		echo 'Wrong Debian version!'
 		exit
 	fi
