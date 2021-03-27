@@ -137,24 +137,37 @@ fi
 #
 #	Guest primary (system) storage LVM volume group
 #
-echo
-echo 'Storage: 0: SSD (default)'
-echo '         1: HDD'
-read stor
-if [ "${stor}" == '' ]; then stor=0; fi
-lv="${name}-root"
-case ${stor} in
+case ${#VG_NAMES[@]} in
 0)
-	vg='ssd'
-	;;
-1)
-	vg='hdd'
-	;;
-*)
-	echo 'Index out of range'
+	echo 'No LVM volume groups defined!'
 	exit
 	;;
+1)
+	vg=${VG_NAMES[0]}
+	;;
+*)
+	echo
+	echo 'LVM volume group:'
+	for v in ${!VG_NAMES[@]}; do
+		if [ ${v} -eq 0 ]; then
+			mm=' (default)'
+		fi
+		echo -e "\t${v}: ${VG_NAMES[${v}]}${mm}"
+	done
+	read stor
+	if [ "${stor}" == '' ]; then stor=0; fi
+	if [ $(echo "${stor}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
+		echo 'Invalid input (must contain only numbers)'
+		exit
+	fi
+	if [ ${stor} -lt 0 -o ${stor} -ge ${#VG_NAMES[@]} ]; then
+		echo 'Index out of range'
+		exit
+	fi
+	vg=${VG_NAMES[${stor}]}
+	;;
 esac
+lv="${name}-root"
 dev="/dev/${vg}/${lv}"
 
 if [ -L ${dev} ]; then
