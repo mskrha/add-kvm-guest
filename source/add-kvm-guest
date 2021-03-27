@@ -1,5 +1,8 @@
 #! /bin/bash
 
+#
+#	Read configuration file
+#
 CONFIG='/etc/default/add-kvm-guest'
 source ${CONFIG} || (echo "Configuration file ${CONFIG} not readable!" && exit 1)
 
@@ -9,13 +12,16 @@ echo 'KVM guest installer, version BUILD_VERSION'
 
 echo
 
+#
+#	Choose type of installation
+#
 echo 'Select type of installation:'
 echo -e '\t0: Debian with preseed (default)'
 echo -e '\t1: Custom ISO'
 read inst
 if [ "${inst}" == '' ]; then inst=0; fi
 case ${inst} in
-0)
+0)	# Debian with preseed
 	echo 'Available Debian versions:'
 	for d in ${!DEBIAN_NAMES[@]}; do
 		if [ ${d} -lt 10 ]
@@ -42,7 +48,7 @@ case ${inst} in
 	msg1="Debian with preseed (${preseed})"
 	msg2="Debian version:    ${DEBIAN_NAMES[${deb}]} (${deb})"
 	;;
-1)
+1)	# Custom ISO
 	echo 'Available installation ISOs:'
 	images=($(ls -1 ${ISO_BASE}))
 	for k in ${!images[@]}; do echo "${k}: ${images[${k}]}"; done
@@ -63,12 +69,15 @@ case ${inst} in
 	msg1='Custom ISO'
 	msg2="Installation ISO:  ${iso}"
 	;;
-*)
+*)	# None
 	echo 'Wrong installation type!'
 	exit
 	;;
 esac
 
+#
+#	Guest name
+#
 echo
 echo -n 'Name:     '; read name
 if [ "x${name}" == 'x' ]; then
@@ -83,12 +92,16 @@ if [ $(echo ${name} | wc -c) -gt 65 ]; then
 	echo 'Guest name must have maximum 64 chars'
 	exit
 fi
+# Check if guest with this name alredy exists
 virsh domid ${name} >/dev/null 2>/dev/null
 if [ ${?} -eq 0 ]; then
 	echo "Guest with name ${name} alredy exists"
 	exit
 fi
 
+#
+#	Guest amount of RAM
+#
 echo -n 'RAM (MB) (default 512 MB): '; read ram
 if [ "${ram}" == '' ]; then ram=512; fi
 if [ $(echo "${ram}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
@@ -100,6 +113,9 @@ if [ ${ram} -lt 64 -o ${ram} -gt 4096 ]; then
 	exit
 fi
 
+#
+#	Guest CPU cores
+#
 echo -n 'CPUs (default 1): '; read cpu
 if [ "${cpu}" == '' ]; then cpu=1; fi
 if [ $(echo "${cpu}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
@@ -111,6 +127,9 @@ if [ ${cpu} -lt 1 -o ${cpu} -gt ${CPU_TOTAL} ]; then
 	exit
 fi
 
+#
+#	Guest primary (system) storage LVM volume group
+#
 echo
 echo 'Storage: 0: SSD (default)'
 echo '         1: HDD'
@@ -136,6 +155,9 @@ if [ -L ${dev} ]; then
 	exit
 fi
 
+#
+#	Guest primary (system) storage size
+#
 echo
 echo -n 'Storage size (GB) (default 2 GB): '
 read size
@@ -149,6 +171,9 @@ if [ ${size} -lt 1 -o ${size} -gt 512 ]; then
 	exit
 fi
 
+#
+#	Find lowest available port for VNC console
+#
 ports=$(grep vnc /etc/libvirt/qemu/*.xml 2>/dev/null)
 if [ ${?} -ne 0 ]; then
 	vnc=5900
@@ -160,6 +185,9 @@ else
 	done
 fi
 
+#
+#	Print summary information how will be guest created
+#
 cat <<- EOF
 
 	==============================
@@ -177,13 +205,22 @@ cat <<- EOF
 
 EOF
 
+#
+#	Ready to deploy?
+#
 echo -n 'Deploy? [Y/n]'; read -n 1 -s q
 echo
 if [ ${q:-Y} == 'n' ]; then exit; fi
 echo
 
+#
+#	Create LVM logical volume
+#
 lvcreate -L "${size}g" -n ${lv} ${vg} || exit
 
+#
+#	Prepare arguments for virt-install by selected installation type
+#
 case ${inst} in
 0)
 	args="--location http://ftp.cz.debian.org/debian/dists/${DEBIAN_DISTS[${deb}]}/main/installer-amd64/ --extra-args auto=true --extra-args url=${preseed} --extra-args hostname=${name} --extra-args domain=${DOMAIN}"
@@ -197,6 +234,9 @@ case ${inst} in
 	;;
 esac
 
+#
+#	Start the installation
+#
 virt-install \
 	--virt-type=kvm \
 	--name ${name} \
