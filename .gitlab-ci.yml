@@ -9,7 +9,7 @@ amd64:
   - tags
  script:
   - export NAME=add-kvm-guest
-  - export VERSION=${CI_NAME_TAG}
+  - export VERSION=${CI_BUILD_TAG}
   - export PKG=${NAME}_${VERSION}_all
   - cd source
   - make
