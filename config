@@ -10,10 +10,10 @@ CPU_TOTAL=4
 DOMAIN='testing.local'
 
 # IP address where to listen for VNC console
-VNC_LISTEN='10.10.10.200'
+VNC_LISTEN='0.0.0.0'
 
 # Path with Debian preseed files
-DEBIAN_PRESEED_PATH='http://10.10.2.80/preseed'
+DEBIAN_PRESEED_PATH='http://127.0.0.1/preseed'
 
 # Supported Debian versions (with code and suite names)
 DEBIAN_DISTS=(
