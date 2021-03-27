@@ -4,6 +4,7 @@ ISO_BASE='/srv/iso/'
 IMAGES=($(ls -1 ${ISO_BASE}))
 CPU_TOTAL=4
 DOMAIN='testing.local'
+VNC_LISTEN='10.10.10.200'
 
 DEBIAN_PRESEED_PATH='http://10.10.2.80/preseed'
 DEBIAN_DISTS=(
@@ -216,7 +217,7 @@ virt-install \
 	--cpu host-model-only \
 	--disk path=${dev},device=disk,bus=virtio \
 	--network bridge=lan,model=virtio \
-	--graphics vnc,listen=10.10.10.200,port=${vnc} \
+	--graphics vnc,listen=${VNC_LISTEN},port=${vnc} \
 	--noautoconsole \
 	--noreboot \
 	${args}
