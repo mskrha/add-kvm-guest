@@ -26,3 +26,8 @@ DEBIAN_NAMES=(
 	[9]='Stretch'
 	[10]='Buster'
 )
+DEBIAN_PRESEED_FILES=(
+	[8]='jessie'
+	[9]='stretch'
+	[10]='buster'
+)
