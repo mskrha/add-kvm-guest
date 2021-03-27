@@ -151,6 +151,8 @@ case ${#VG_NAMES[@]} in
 	for v in ${!VG_NAMES[@]}; do
 		if [ ${v} -eq 0 ]; then
 			mm=' (default)'
+		else
+			mm=''
 		fi
 		echo -e "\t${v}: ${VG_NAMES[${v}]}${mm}"
 	done
