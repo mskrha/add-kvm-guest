@@ -32,6 +32,8 @@ DEBIAN_PRESEED_FILES=(
 	[10]='buster'
 )
 
+DEBIAN_MIRROR='ftp.cz.debian.org'
+
 VG_NAMES=(
 	'vg0'
 )

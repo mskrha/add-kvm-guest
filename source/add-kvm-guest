@@ -52,6 +52,7 @@ case ${inst} in
 		exit
 	fi
 	preseed="${DEBIAN_PRESEED_PATH}/${DEBIAN_PRESEED_FILES[${deb}]}"
+	loc="http://${DEBIAN_MIRROR}/debian/dists/${DEBIAN_DISTS[${deb}]}/main/installer-amd64/"
 	msg1="Debian with preseed (${preseed})"
 	msg2="Debian version:    ${DEBIAN_NAMES[${deb}]} (${deb})"
 	;;
@@ -283,7 +284,7 @@ lvcreate -L "${size}g" -n ${lv} ${vg} || exit
 #
 case ${inst} in
 0)
-	args="--location http://ftp.cz.debian.org/debian/dists/${DEBIAN_DISTS[${deb}]}/main/installer-amd64/ --extra-args auto=true --extra-args url=${preseed} --extra-args hostname=${name} --extra-args domain=${DOMAIN}"
+	args="--location ${loc} --extra-args auto=true --extra-args url=${preseed} --extra-args hostname=${name} --extra-args domain=${DOMAIN}"
 	;;
 1)
 	args="--cdrom ${iso}"
