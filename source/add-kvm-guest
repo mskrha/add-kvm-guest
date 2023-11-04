@@ -309,4 +309,5 @@ virt-install \
 	--graphics vnc,listen=${VNC_LISTEN},port=${vnc} \
 	--noautoconsole \
 	--noreboot \
+	--osinfo detect=on \
 	${args}
