@@ -110,8 +110,8 @@ fi
 #
 #	Guest amount of RAM
 #
-echo -n 'RAM (MB) (default 512 MB): '; read ram
-if [ "${ram}" == '' ]; then ram=512; fi
+echo -n 'RAM (MB) (default 1024 MB): '; read ram
+if [ "${ram}" == '' ]; then ram=1024; fi
 if [ $(echo "${ram}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
 	echo 'Invalid input (must contain only numbers)'
 	exit
