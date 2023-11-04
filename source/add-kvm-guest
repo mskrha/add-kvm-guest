@@ -182,9 +182,9 @@ fi
 #	Guest primary (system) storage size
 #
 echo
-echo -n 'Storage size (GB) (default 2 GB): '
+echo -n 'Storage size (GB) (default 4 GB): '
 read size
-if [ "${size}" == '' ]; then size=2; fi
+if [ "${size}" == '' ]; then size=4; fi
 if [ $(echo "${size}" | sed 's/[0-9]*//g' | wc -c) -ne 1 ]; then
 	echo 'Invalid input (must contain only numbers)'
 	exit
