@@ -277,7 +277,8 @@ echo
 #
 #	Create LVM logical volume
 #
-lvcreate -L "${size}g" -n ${lv} ${vg} || exit
+lvcreate -W n -L "${size}g" -n ${lv} ${vg} || exit
+wipefs -a -q ${dev} || exit
 
 #
 #	Prepare arguments for virt-install by selected installation type
