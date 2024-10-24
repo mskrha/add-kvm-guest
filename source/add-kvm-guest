@@ -285,7 +285,7 @@ wipefs -a -q ${dev} || exit
 #
 case ${inst} in
 0)
-	args="--location ${loc} --extra-args auto=true --extra-args url=${preseed} --extra-args hostname=${name} --extra-args domain=${DOMAIN}"
+	args="--location ${loc} --extra-args auto=true --extra-args url=${preseed} --extra-args hostname=${name} --extra-args domain=${DOMAIN} --extra-args netcfg/hostname=${name}"
 	;;
 1)
 	args="--cdrom ${iso}"
